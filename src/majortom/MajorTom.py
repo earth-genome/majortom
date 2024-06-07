@@ -3,8 +3,8 @@ from shapely.geometry import Polygon
 
 
 class MajorTomGrid:
-    def __init__(self, D=320, overlap=True):
-        self.D = D  # grid spacing in meters
+    def __init__(self, d: int = 320, overlap=True):
+        self.D = d  # grid spacing in meters
         self.earth_radius = 6378137  # Earth's radius in meters (WGS84 ellipsoid)
         self.overlap = overlap
 
@@ -76,6 +76,6 @@ class MajorTomGrid:
 
     def count_polygon(self, polygon):
         count = 0
-        for tile in self.tile_polygon(polygon):
+        for _ in self.tile_polygon(polygon):
             count += 1
         return count
