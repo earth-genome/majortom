@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024-present tingold <hutch@earthrise.media>
+# SPDX-FileCopyrightText: 2024-present earthgenome <info@earthgenome.org>
 #
 # SPDX-License-Identifier: MIT
-__version__ = "0.0.1"
+__version__ = "0.1.0"
