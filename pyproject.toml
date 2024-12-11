@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "majortom"
+name = "majortom_eg"
 version = "0.1.0"
-description = 'equal area grid utils'
+description = 'Implementation of the ESA MajorTom grid system'
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
@@ -14,15 +14,9 @@ authors = [
   { name = "tingold", email = "hutch@earthgenome.org" },
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
 ]
 dependencies = [ "numpy","shapely","geolib"]
 
@@ -32,26 +26,26 @@ Issues = "https://github.com/earth-genome/majortom/issues"
 Source = "https://github.com/earth-genome/majortom"
 
 [tool.hatch.version]
-path = "src/majortom/__about__.py"
+path = "src/majortom_eg/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/majortom tests}"
+check = "mypy --install-types --non-interactive {args:src/majortom_eg tests}"
 
 [tool.coverage.run]
-source_pkgs = ["majortom", "tests"]
+source_pkgs = ["majortom_eg", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/majortom/__about__.py",
+  "src/majortom_eg/__about__.py",
 ]
 
 [tool.coverage.paths]
-majortom = ["src/majortom", "*/majortom/src/majortom"]
-tests = ["tests", "*/majortom/tests"]
+majortom_eg = ["src/majortom", "*/majortom/src/majortom_eg"]
+tests = ["tests", "*/majortom_eg/tests"]
 
 [tool.coverage.report]
 exclude_lines = [

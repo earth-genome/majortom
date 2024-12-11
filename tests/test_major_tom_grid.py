@@ -2,7 +2,7 @@ import random
 import unittest
 import shapely.geometry
 from shapely.geometry import Polygon, Point
-from src.majortom.MajorTom import MajorTomGrid,GridCell
+from src.majortom_eg.MajorTom import MajorTomGrid,GridCell
 
 # geometries for testing
 bigSouthampton = {
