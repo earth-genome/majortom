@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "majortom"
-dynamic = ["version"]
+version = "0.1.0"
 description = 'equal area grid utils'
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "tingold", email = "hutch@earthrise.media" },
+  { name = "tingold", email = "hutch@earthgenome.org" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -24,12 +24,12 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = [ "numpy","shapely"]
+dependencies = [ "numpy","shapely","geolib"]
 
 [project.urls]
-Documentation = "https://github.com/tingold/majortom#readme"
-Issues = "https://github.com/tingold/majortom/issues"
-Source = "https://github.com/tingold/majortom"
+Documentation = "https://github.com/earth-genome/majortom#readme"
+Issues = "https://github.com/earth-genome/majortom/issues"
+Source = "https://github.com/earth-genome/majortom"
 
 [tool.hatch.version]
 path = "src/majortom/__about__.py"
