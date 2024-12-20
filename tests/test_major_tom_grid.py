@@ -502,6 +502,19 @@ class TestMajorTomGrid(unittest.TestCase):
         self.assertTrue(found_cell is not None,)
         self.assertTrue(found_cell.geom.equals_exact(cell.geom,0.00000001))
 
+        grid = MajorTomGrid(d=320, overlap=True)
+        # polygon 1/10 of a degree square
+        my_aoi = shapely.geometry.Polygon(((0., 0.), (0., 0.1), (0.1, 0.1), (0.1, 0.), (0., 0.)))
+
+        # iterate of cells returned from generator
+        for cell in grid.generate_grid_cells(my_aoi):
+            # do something with cells
+            print(f'cell id is {cell.id()}')
+
+    #for whatever reason this cell was not looking up, was the reason for the buffer searching added in 0.1.1
+    def test_bad_cell(self):
+        cell = self.grid.cell_from_id('qr330j8p802')
+        print(cell)
 
 if __name__ == '__main__':
     unittest.main()

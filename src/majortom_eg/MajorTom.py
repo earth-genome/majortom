@@ -82,13 +82,18 @@ class MajorTomGrid:
 
         return tiles
 
-    def cell_from_id(self, cell_id:str) -> GridCell:
+    def cell_from_id(self, cell_id:str, buffer=False) -> GridCell:
         if len(cell_id) > 11:
             cell_id = cell_id[:10]
         bounds = geohash.bounds(cell_id)
         p = box(bounds.sw[1],bounds.sw[0],bounds.ne[1],bounds.ne[0])
+        if buffer:
+            p = shapely.buffer(p, 0.0001 * self.D)
         candidates = self.generate_grid_cells(p)
         for candidate in candidates:
             if candidate.id() == cell_id:
                 return candidate
+        if not buffer:
+            return self.cell_from_id(cell_id, True)
+
         raise Exception(f"Can't find cell with id {cell_id}")
