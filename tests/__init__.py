@@ -1,3 +1,3 @@
-# SPDX-FileCopyrightText: 2024-present tingold <hutch@earthrise.media>
+# SPDX-FileCopyrightText: 2024-present Earth Genome <info@earthgenome.org>
 #
 # SPDX-License-Identifier: MIT
