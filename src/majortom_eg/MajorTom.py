@@ -101,10 +101,10 @@ class MajorTomGrid:
             raise ValueError("Cell ID must be exactly 11 characters")
 
         bounds = geohash.bounds(cell_id)
-        buffer_size = 0.0001 * self.D if buffer else 0
-        p = box(bounds['w'], bounds['s'], bounds['e'], bounds['n'])
+        p = box(bounds.sw[1],bounds.sw[0],bounds.ne[1],bounds.ne[0])
 
         if buffer:
+            buffer_size = 0.0001 * self.D
             p = p.buffer(buffer_size)
 
         candidates = list(self.generate_grid_cells(p))
