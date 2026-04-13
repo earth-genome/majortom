@@ -625,6 +625,55 @@ class TestMigrateCellId(unittest.TestCase):
         with self.assertRaises(ValueError):
             grid.migrate_cell_id("short")
 
+class TestParallelGridCells(unittest.TestCase):
+    """Verify parallel generate_grid_cells matches sequential results."""
+
+    def _assert_cells_equal(self, cells_seq, cells_par):
+        self.assertEqual(len(cells_seq), len(cells_par),
+            "Sequential and parallel should produce the same number of cells")
+
+        seq_ids = sorted(c.id() for c in cells_seq)
+        par_ids = sorted(c.id() for c in cells_par)
+        self.assertEqual(seq_ids, par_ids,
+            "Sequential and parallel should produce the same cell IDs")
+
+        seq_by_id = {c.id(): c for c in cells_seq}
+        par_by_id = {c.id(): c for c in cells_par}
+        for cell_id in seq_by_id:
+            self.assertTrue(
+                seq_by_id[cell_id].geom.equals_exact(par_by_id[cell_id].geom, 1e-10),
+                f"Geometry mismatch for cell {cell_id}")
+            self.assertEqual(
+                seq_by_id[cell_id].is_primary, par_by_id[cell_id].is_primary,
+                f"is_primary mismatch for cell {cell_id}")
+
+    def test_parallel_matches_sequential_with_overlap(self):
+        poly = shapely.geometry.shape(bigSouthampton)
+        grid_seq = MajorTomGrid(d=50000, overlap=True)
+        grid_par = MajorTomGrid(d=50000, overlap=True, max_workers=4)
+
+        cells_seq = list(grid_seq.generate_grid_cells(poly))
+        cells_par = list(grid_par.generate_grid_cells(poly))
+        self._assert_cells_equal(cells_seq, cells_par)
+
+    def test_parallel_matches_sequential_no_overlap(self):
+        poly = shapely.geometry.shape(bigSouthampton)
+        grid_seq = MajorTomGrid(d=50000, overlap=False)
+        grid_par = MajorTomGrid(d=50000, overlap=False, max_workers=4)
+
+        cells_seq = list(grid_seq.generate_grid_cells(poly))
+        cells_par = list(grid_par.generate_grid_cells(poly))
+        self._assert_cells_equal(cells_seq, cells_par)
+
+    def test_parallel_matches_sequential_large_polygon(self):
+        big_poly = Polygon([(-10, -10), (10, -10), (10, 10), (-10, 10)])
+        grid_seq = MajorTomGrid(d=50000, overlap=True)
+        grid_par = MajorTomGrid(d=50000, overlap=True, max_workers=4)
+
+        cells_seq = list(grid_seq.generate_grid_cells(big_poly))
+        cells_par = list(grid_par.generate_grid_cells(big_poly))
+        self._assert_cells_equal(cells_seq, cells_par)
+
 
 if __name__ == '__main__':
     unittest.main()
