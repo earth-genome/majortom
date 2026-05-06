@@ -1,0 +1,69 @@
+# Notify ei-internal-docs of changes that may need cross-repo doc updates.
+#
+# Installed by `scripts/rollout_universal_agents_md.py` from the EI internal
+# docs repo. To update, edit the template at:
+#     https://github.com/earth-genome/ei-internal-docs/blob/main/templates/notify-internal-docs.yml
+#
+# Required org secret: EI_DOCS_DISPATCH_TOKEN
+#   A fine-grained PAT with `Contents: read` and `Issues: write` on
+#   earth-genome/ei-internal-docs.
+#
+# What it does:
+#   On every push to the default branch, computes the list of changed paths
+#   in this commit and sends a `repository_dispatch` event of type
+#   `component-updated` to ei-internal-docs. The listener there decides
+#   whether to open a "Sync needed" issue based on watched_paths in
+#   repos.yaml.
+
+name: Notify ei-internal-docs
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+      - production
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute changed paths since previous commit
+        id: changes
+        run: |
+          if [ -z "${{ github.event.before }}" ] || [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            CHANGED="(initial push)"
+          else
+            CHANGED=$(git --no-pager diff --name-only "${{ github.event.before }}" "${{ github.event.after }}" 2>/dev/null | head -100 | tr '\n' ',' | sed 's/,$//')
+          fi
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Send repository_dispatch to ei-internal-docs
+        env:
+          GH_TOKEN: ${{ secrets.EI_DOCS_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "EI_DOCS_DISPATCH_TOKEN not set; skipping notification."
+            exit 0
+          fi
+          # Fall back gracefully if the dispatch endpoint rejects (e.g. token expired).
+          curl -fsSL -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/earth-genome/ei-internal-docs/dispatches \
+            -d "$(jq -n \
+              --arg repo "${{ github.event.repository.name }}" \
+              --arg sha "${{ github.sha }}" \
+              --arg actor "${{ github.actor }}" \
+              --arg branch "${{ github.ref_name }}" \
+              --arg url "${{ github.event.head_commit.url }}" \
+              --arg msg "${{ github.event.head_commit.message }}" \
+              --arg changed "${{ steps.changes.outputs.changed }}" \
+              '{event_type:"component-updated", client_payload:{repo:$repo, sha:$sha, actor:$actor, branch:$branch, url:$url, message:$msg, changed_paths:$changed}}')" \
+            || echo "Dispatch failed (non-fatal); ei-internal-docs nightly sync will catch this."
