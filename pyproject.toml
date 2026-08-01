@@ -1,55 +1,56 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
 
 [project]
 name = "majortom_eg"
 version = "1.0.0"
-description = 'Implementation of the ESA MajorTom grid system'
+description = "Implementation of the ESA MajorTom grid system (Rust-backed)"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
-keywords = []
+keywords = ["geospatial", "grid", "geohash", "major-tom", "esa"]
 authors = [
   { name = "tingold", email = "hutch@earthgenome.org" },
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Rust",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
-dependencies = [ "numpy","shapely","geolib"]
+dependencies = [
+  "shapely",
+]
+
+[project.optional-dependencies]
+test = [
+  "numpy",
+  "geolib",
+  "pytest",
+]
 
 [project.urls]
 Documentation = "https://github.com/earth-genome/majortom#readme"
 Issues = "https://github.com/earth-genome/majortom/issues"
 Source = "https://github.com/earth-genome/majortom"
 
-[tool.hatch.version]
-path = "src/majortom_eg/__about__.py"
+[tool.maturin]
+python-source = "python"
+module-name = "majortom_eg._native"
+features = ["pyo3/extension-module"]
 
-[tool.hatch.envs.types]
-extra-dependencies = [
-  "mypy>=1.0.0",
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/majortom_eg tests}"
-
-[tool.coverage.run]
-source_pkgs = ["majortom_eg", "tests"]
-branch = true
-parallel = true
-omit = [
-  "src/majortom_eg/__about__.py",
-]
-
-[tool.coverage.paths]
-majortom_eg = ["src/majortom", "*/majortom/src/majortom_eg"]
-tests = ["tests", "*/majortom_eg/tests"]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
+[dependency-groups]
+dev = [
+  "maturin>=1.7,<2.0",
+  "numpy",
+  "geolib",
+  "pytest",
 ]

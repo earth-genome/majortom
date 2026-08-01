@@ -1,0 +1,17 @@
+[package]
+name = "majortom_eg"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Python bindings for the ESA Major TOM equal-area grid (Rust core)"
+license = "MIT"
+publish = false
+
+[lib]
+name = "_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+geo = "0.29"
+majortom = { path = "vendor/majortom-rs" }
+pyo3 = { version = "0.25", features = ["extension-module", "abi3-py38"] }
