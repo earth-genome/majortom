@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "majortom_eg"
-version = "1.0.0"
+version = "1.1.0"
 description = "Implementation of the ESA MajorTom grid system (Rust-backed)"
 readme = "README.md"
 requires-python = ">=3.8"

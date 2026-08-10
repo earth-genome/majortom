@@ -6,8 +6,28 @@ on:
       - "v*"
 
 jobs:
+  check-version:
+    name: check version matches tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # maturin names the wheels after the pyproject version, not the tag, so a
+      # tag pushed without a version bump silently rebuilds an already-published
+      # release and PyPI rejects the upload.
+      - name: Compare tag to pyproject version
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          project_version="$(python -c 'import tomllib, pathlib; print(tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"])')"
+          echo "tag: $tag_version, pyproject: $project_version"
+          if [ "$tag_version" != "$project_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match pyproject version $project_version. Bump the version in pyproject.toml, Cargo.toml and python/majortom_eg/__about__.py before tagging."
+            exit 1
+          fi
+
   build-wheels:
     name: build (${{ matrix.os }})
+    needs: [check-version]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
